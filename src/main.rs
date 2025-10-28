@@ -6,7 +6,12 @@ mod utils {
     pub mod interfase;
 }
 
+mod api {
+    pub mod send_info;
+}
+
 use utils::interfase::*;
+use api::send_info::*;
 
 fn main() {
     let mut sys = System::new_all();
@@ -202,7 +207,23 @@ fn main() {
     
     // ============= GENERAR E IMPRIMIR JSON =============
     match serde_json::to_string_pretty(&reporte) {
-        Ok(json) => println!("{}", json),
+        Ok(json) => {
+            println!("{}", json);
+            
+            // ============= ENVIAR INFO A SERVIDOR REMOTO =============
+            let url = "https://httpbin.org/post"; 
+            let info = Info {
+                id: 1,
+                name: "SistemaReporte".into(),
+                active: true,
+            };
+            
+            let rt = tokio::runtime::Runtime::new().unwrap();
+            match rt.block_on(send_info(url, &info)) {
+                Ok(status) => println!("Información enviada con estado: {}", status),
+                Err(e) => eprintln!("Error al enviar información: {}", e),
+            }
+        },
         Err(e) => eprintln!("Error al generar JSON: {}", e),
     }
 }
