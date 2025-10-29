@@ -2,6 +2,10 @@ use sysinfo::{System, Networks, Disks, Users};
 use std::net::UdpSocket;
 use serde_json;
 
+mod functions {
+    pub mod helpers;
+}
+
 mod utils {
     pub mod interfase;
 }
@@ -12,6 +16,7 @@ mod api {
 
 use utils::interfase::*;
 use api::send_info::*;
+use functions::helpers::*;
 
 fn main() {
     let mut sys = System::new_all();
@@ -170,13 +175,14 @@ fn main() {
     };
     
     // ============= VERIFICACIÓN DE CARPETA PERSONALIZADA =============
-    let paths_to_check = vec!["C:\\"];
+
+    let paths_to_check = ask_paths_to_check();
     let mut aplicaciones = Vec::new();
     
     for path in paths_to_check {
-        let existe = std::path::Path::new(path).exists();
+        let existe = std::path::Path::new(&path).exists();
         let elementos = if existe {
-            if let Ok(entries) = std::fs::read_dir(path) {
+            if let Ok(entries) = std::fs::read_dir(&path) {
                 let files: Vec<_> = entries.filter_map(Result::ok).collect();
                 Some(files.len())
             } else {
@@ -204,7 +210,9 @@ fn main() {
         procesos: procesos_info,
         verificacion_aplicaciones: aplicaciones,
     };
-    
+
+    let winput = request_input_ticket();
+
     // ============= GENERAR E IMPRIMIR JSON =============
     match serde_json::to_string_pretty(&reporte) {
         Ok(json) => {
@@ -216,6 +224,7 @@ fn main() {
                 id: 1,
                 name: "SistemaReporte".into(),
                 active: true,
+                winput: winput.clone(),
             };
             
             let rt = tokio::runtime::Runtime::new().unwrap();
@@ -225,5 +234,10 @@ fn main() {
             }
         },
         Err(e) => eprintln!("Error al generar JSON: {}", e),
+
+        
     }
+    let mut _dummy = String::new();
+    std::io::stdin().read_line(&mut _dummy).unwrap();
 }
+
