@@ -1,5 +1,8 @@
 use std::io;
 
+
+use crate::utils::interfase::*;
+
 /// The function `request_input_ticket` in Rust prompts the user for input and returns the trimmed input
 /// as a String.
 /// 
@@ -39,4 +42,30 @@ pub fn ask_paths_to_check() -> Vec<String> {
         .collect();
 
     paths
+}
+
+pub fn check_path_exists(paths: Vec<String>) -> Vec<AplicacionInfo> {
+    let mut aplicaciones = Vec::new();
+    
+    for path in paths {
+        let existe = std::path::Path::new(&path).exists();
+        let elementos = if existe {
+            if let Ok(entries) = std::fs::read_dir(&path) {
+                let files: Vec<_> = entries.filter_map(Result::ok).collect();
+                Some(files.len())
+            } else {
+                None
+            }
+        } else {
+            None
+        };
+        
+        aplicaciones.push(AplicacionInfo {
+            ruta: path.to_string(),
+            existe,
+            elementos,
+        });
+    }
+
+    aplicaciones
 }
