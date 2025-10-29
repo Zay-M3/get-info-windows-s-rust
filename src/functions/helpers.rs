@@ -1,7 +1,7 @@
 use std::io;
 
-
 use crate::utils::interfase::*;
+use crate::api::send_info::*;
 
 /// The function `request_input_ticket` in Rust prompts the user for input and returns the trimmed input
 /// as a String.
@@ -44,6 +44,20 @@ pub fn ask_paths_to_check() -> Vec<String> {
     paths
 }
 
+/// The function `check_path_exists` takes a vector of file paths, checks if each path exists, counts
+/// the number of elements in the path if it exists, and returns a vector of `AplicacionInfo` structs
+/// containing information about each path.
+/// 
+/// Arguments:
+/// 
+/// * `paths`: The function `check_path_exists` takes a vector of strings `paths` as input. Each string
+/// in the vector represents a file path that you want to check for existence and retrieve information
+/// about its elements.
+/// 
+/// Returns:
+/// 
+/// The function `check_path_exists` returns a vector of `AplicacionInfo` structs, which contain
+/// information about each path in the input vector `paths`.
 pub fn check_path_exists(paths: Vec<String>) -> Vec<AplicacionInfo> {
     let mut aplicaciones = Vec::new();
     
@@ -68,4 +82,59 @@ pub fn check_path_exists(paths: Vec<String>) -> Vec<AplicacionInfo> {
     }
 
     aplicaciones
+}
+
+/// The function `parse_to_json` takes a `SystemReport` struct reference and converts it to a
+/// pretty-printed JSON string, returning a `Result` with either the JSON string or a
+/// `serde_json::Error`.
+/// 
+/// Arguments:
+/// 
+/// * `report`: The `report` parameter in the `parse_to_json` function is of type `SystemReport`, which
+/// is presumably a custom struct or type that contains information about a system. The function takes a
+/// reference to this `SystemReport` as input and attempts to serialize it into a JSON string using
+/// `serde
+/// 
+/// Returns:
+/// 
+/// The function `parse_to_json` returns a `Result` containing a `String` if the serialization of the
+/// `SystemReport` struct to JSON is successful. If an error occurs during the serialization process, it
+/// returns a `serde_json::Error`.
+pub fn parse_to_json(report: &SystemReport) -> Result<String, serde_json::Error> {
+    let json = serde_json::to_string_pretty(report)?;
+    Ok(json)
+}
+
+
+/// The function `print_and_send_json` prints a JSON representation of a `SystemReport` and sends the
+/// information to a remote server.
+/// 
+/// Arguments:
+/// 
+/// * `report`: The `print_and_send_json` function takes a reference to a `SystemReport` struct as
+/// input. This function first tries to parse the `SystemReport` into a JSON format. If successful, it
+/// prints the JSON data and then proceeds to send the information to a remote server.
+
+pub fn print_and_send_json(report: &SystemReport) {
+
+    match parse_to_json(report) {
+        Ok(json) => {
+            println!("{}", json);
+
+            // ============= ENVIAR INFO A SERVIDOR REMOTO =============
+            let info = Info {
+                id: 1,
+                name: "SistemaReporte".into(),
+                active: true,
+                winput: request_input_ticket(),
+            };
+
+            let rt = tokio::runtime::Runtime::new().unwrap();
+            match rt.block_on(send_info(&info)) {
+                Ok(status) => println!("Información enviada con estado: {}", status),
+                Err(e) => eprintln!("Error al enviar información: {}", e),
+            }
+        },
+        Err(e) => eprintln!("Error generating JSON: {}", e),
+    }
 }
