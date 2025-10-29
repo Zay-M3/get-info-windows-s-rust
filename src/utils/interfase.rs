@@ -124,3 +124,10 @@ pub struct AplicacionInfo {
     pub elementos: Option<usize>,
 }
 
+#[derive(Serialize, Debug)]
+pub struct Info {
+    pub id: u64,
+    pub name: String,
+    pub active: bool,
+    pub winput: String,
+}

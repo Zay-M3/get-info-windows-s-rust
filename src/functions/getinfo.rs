@@ -3,6 +3,14 @@ use std::net::UdpSocket;
 
 use crate::utils::interfase::*;
 
+/// The function `get_system_os` in Rust retrieves information about the system's operating system,
+/// including OS name, version, kernel version, hostname, and uptime.
+/// 
+/// Returns:
+/// 
+/// The function `get_system_os` is returning an instance of the `SistemaOperativo` struct, which
+/// contains information about the system's operating system, version, kernel version, hostname, uptime
+/// in seconds, and uptime in days.
 pub fn get_system_os() -> SistemaOperativo {
 
     let uptime = System::uptime();
@@ -17,6 +25,14 @@ pub fn get_system_os() -> SistemaOperativo {
 
     sistema_operativo
 }
+/// The function `get_cpu_info` retrieves information about the CPU, including details about each core
+/// such as name, frequency, usage percentage, and vendor ID.
+/// 
+/// Returns:
+/// 
+/// The `get_cpu_info` function is returning a `CpuInfo` struct that contains information about the
+/// CPU(s) in the system. The struct includes the total number of CPUs and a vector of `CpuDetalle`
+/// structs, each representing detailed information about an individual CPU core.
 
 pub fn get_cpu_info()-> CpuInfo {
     let mut sys = System::new_all();
@@ -40,6 +56,15 @@ pub fn get_cpu_info()-> CpuInfo {
 
     cpu_info
 }
+/// This Rust function retrieves memory information such as total RAM, used RAM, free RAM, RAM usage
+/// percentage, total swap space, used swap space, and free swap space.
+/// 
+/// Returns:
+/// 
+/// The `get_memory_info` function is returning a struct of type `MemoriaInfo` which contains various
+/// memory-related information such as total RAM in gigabytes, total RAM in bytes, used RAM in
+/// gigabytes, used RAM in bytes, free RAM in gigabytes, free RAM in bytes, RAM usage percentage, total
+/// swap space in gigabytes, used swap space in gigabytes, and free swap
 
 pub fn get_memory_info() -> MemoriaInfo {
     let mut sys = System::new_all();
@@ -60,6 +85,15 @@ pub fn get_memory_info() -> MemoriaInfo {
 
     memoria_info
 }
+/// The function `get_disks_info` retrieves information about disks in the system and returns it as a
+/// vector of `DiscoInfo` structs.
+/// 
+/// Returns:
+/// 
+/// The function `get_disks_info` is returning a vector of `DiscoInfo` structs. Each `DiscoInfo` struct
+/// contains information about a disk, such as disk number, name, mount point, file system, type, total
+/// space in GB, available space in GB, used space in GB, percentage usage, and whether the disk is
+/// removable.
 
 pub fn get_disks_info() -> Vec<DiscoInfo> {
     let mut sys = System::new_all();
@@ -85,6 +119,13 @@ pub fn get_disks_info() -> Vec<DiscoInfo> {
     discos_info
 }
 
+/// The function `get_networks_info` retrieves network information such as interface details and local
+/// IP address in Rust.
+/// 
+/// Returns:
+/// 
+/// The `get_networks_info` function is returning an instance of the `RedesInfo` struct, which contains
+/// information about network interfaces and the local IP address.
 
 pub fn get_networks_info() -> RedesInfo {
 
@@ -123,6 +164,11 @@ pub fn get_networks_info() -> RedesInfo {
 
     redes_info
 }
+/// The function `get_users_info` retrieves information about users and their groups in Rust.
+/// 
+/// Returns:
+/// 
+/// The function `get_users_info` is returning an instance of `UsuariosInfo` struct.
 
 pub fn get_users_info() -> UsuariosInfo {
     let mut sys = System::new_all();
@@ -149,6 +195,16 @@ pub fn get_users_info() -> UsuariosInfo {
 
     usuarios_info
 }
+/// The function `get_processes_info` retrieves information about processes, including the top 10
+/// processes by CPU and memory usage.
+/// 
+/// Returns:
+/// 
+/// The `get_processes_info` function is returning a struct `ProcesosInfo` which contains information
+/// about processes. The struct includes the total number of processes, the top 10 processes by CPU
+/// usage, and the top 10 processes by memory usage. Each top process is represented by a
+/// `ProcesoDetalle` struct which contains details such as process ID, name, CPU percentage, memory
+/// usage in
 
 pub fn get_processes_info() -> ProcesosInfo {
     let mut sys = System::new_all();
