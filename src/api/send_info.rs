@@ -1,8 +1,6 @@
 use serde::Serialize;
 use reqwest::Client;
 use reqwest::header::CONTENT_TYPE;
-use serde_json;
-
 #[derive(Serialize, Debug)]
 pub struct Info {
     pub id: u64,
