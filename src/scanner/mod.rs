@@ -9,6 +9,16 @@ const PER_HOST_CONCURRENCY: usize = 20;
 const BATCH_SIZE: usize = 1024;
 const TIMEOUT_MS: u64 = 200;
 
+/// The function `get_all_ips` retrieves all IP addresses associated with the system's network
+/// interfaces in Rust asynchronously.
+/// 
+/// Returns:
+/// 
+/// The function `get_all_ips` returns a `Vec<String>` containing either a list of IP addresses as
+/// strings if successfully retrieved from network interfaces, or an error message string if there was
+/// an issue reading the interfaces. If no IP addresses are found, it returns a single string indicating
+/// that no IPs were found.
+
 pub async fn get_all_ips() -> Vec<String> {
     match get_if_addrs() {
         Ok(interfaces) => {
@@ -18,15 +28,30 @@ pub async fn get_all_ips() -> Vec<String> {
                 .collect();
             
             if ips.is_empty() {
-                vec!["No IPs found".to_string()]
+                vec!["No se encontraron IPS".to_string()]
             } else {
                 ips
             }
         }
-        Err(_) => vec!["Error reading interfaces".to_string()],
+        Err(_) => vec!["Error leyendo la interfaz".to_string()],
     }
 }
 
+
+/// The function `scan_all_ports_optimized` asynchronously scans multiple ports on a given IP address in
+/// batches, utilizing a semaphore to limit concurrency and handling timeouts for connection attempts.
+/// 
+/// Arguments:
+/// 
+/// * `ip`: The `ip` parameter in the `scan_all_ports_optimized` function is a string slice (`&str`)
+/// representing the IP address of the host you want to scan for open ports.
+/// * `ports`: The `ports` parameter is an array of unsigned 16-bit integers representing the list of
+/// ports to scan for the given IP address.
+/// 
+/// Returns:
+/// 
+/// The function `scan_all_ports_optimized` returns a `Vec<u16>` containing the open ports found during
+/// the port scanning process.
 
 pub async fn scan_all_ports_optimized(ip: &str, ports: &[u16]) -> Vec<u16> {
     let semaphore = Arc::new(Semaphore::new(PER_HOST_CONCURRENCY));
@@ -47,7 +72,10 @@ pub async fn scan_all_ports_optimized(ip: &str, ports: &[u16]) -> Vec<u16> {
                 let connect = tokio::net::TcpStream::connect(&socket_addr);
                 
                 match timeout(Duration::from_millis(TIMEOUT_MS), connect).await {
-                    Ok(Ok(_)) => Some(port),
+                    Ok(Ok(_)) => { 
+                        println!("  ✓ Puerto abierto: {}", port);
+                        Some(port)
+                    },
                     _ => None,
                 }
             });

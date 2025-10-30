@@ -3,12 +3,14 @@
 use tokio::sync::Semaphore;
 use std::sync::Arc;
 use futures::future::join_all;
+/// The `run_scanner` function in Rust asynchronously scans a range of IP addresses for open ports and
+/// prints the results.
 
 use super::{get_all_ips, scan_all_ports_optimized};
 
 pub async fn run_scanner() {
     let ips = get_all_ips().await;
-    let ports_to_scan: Arc<Vec<u16>> = Arc::new((1u16..1024u16).collect());
+    let ports_to_scan: Arc<Vec<u16>> = Arc::new((1u16..10024u16).collect());
     
     let semaphore = Arc::new(Semaphore::new(50));
     

@@ -116,10 +116,10 @@ pub async fn print_and_send_json(report: &SystemReport) {
     match parse_to_json(report) {
         Ok(json) => {
             let mut input = String::new();
-            println!("Press y to print json or any other key to skip...");
+            println!("Presiona y para imprimir el JSON o cualquier otra tecla para omitir...");
             io::stdin()
                 .read_line(&mut input)
-                .expect("Failed to read line");
+                .expect("Fallo al leer la línea");
 
             if input.trim().eq_ignore_ascii_case("y") {
                 println!("{}", json);
@@ -127,10 +127,10 @@ pub async fn print_and_send_json(report: &SystemReport) {
 
             let mut input = String::new();
 
-            println!("Press y to send info to remote server or any other key to skip...");
+            println!("Presiona y para enviar la información al servidor remoto o cualquier otra tecla para omitir...");
             io::stdin()
                 .read_line(&mut input)
-                .expect("Failed to read line");
+                .expect("Fallo al leer la línea");
 
             if !input.trim().eq_ignore_ascii_case("y") {
                 return;
@@ -150,6 +150,6 @@ pub async fn print_and_send_json(report: &SystemReport) {
                 Err(e) => eprintln!("Error al enviar información: {}", e),
             }
         },
-        Err(e) => eprintln!("Error generating JSON: {}", e),
+        Err(e) => eprintln!("Error generando JSON: {}", e),
     }
 }
