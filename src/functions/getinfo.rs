@@ -105,8 +105,9 @@ pub fn get_disks_info() -> Vec<DiscoInfo> {
             let used_space = total_space.saturating_sub(available_space);
             
             // Prevent division by zero for empty/unmounted disks
+            // Use floating point for accurate percentage calculation
             let uso_porcentaje = if total_space > 0 {
-                (used_space * 100) / total_space
+                ((used_space as f64 * 100.0) / total_space as f64).round() as u64
             } else {
                 0
             };
