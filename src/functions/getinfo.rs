@@ -95,7 +95,7 @@ pub fn get_memory_info(sys: &System) -> MemoriaInfo {
 /// space in GB, available space in GB, used space in GB, percentage usage, and whether the disk is
 /// removable.
 pub fn get_disks_info() -> Vec<DiscoInfo> {
-    const BYTES_TO_GB: f64 = 1024.0 * 1024.0 * 1024.0;
+    const BYTES_TO_GB: u64 = 1024 * 1024 * 1024;
     
     let disks = Disks::new_with_refreshed_list();
     disks.iter().enumerate()
@@ -110,10 +110,10 @@ pub fn get_disks_info() -> Vec<DiscoInfo> {
                 punto_montaje: disk.mount_point().display().to_string(),
                 sistema_archivos: format!("{:?}", disk.file_system()),
                 tipo: format!("{:?}", disk.kind()),
-                espacio_total_gb: total_space as f64 / BYTES_TO_GB,
-                espacio_disponible_gb: available_space as f64 / BYTES_TO_GB,
-                espacio_usado_gb: used_space as f64 / BYTES_TO_GB,
-                uso_porcentaje: (used_space as f64 / total_space as f64) * 100.0,
+                espacio_total_gb: total_space / BYTES_TO_GB,
+                espacio_disponible_gb: available_space  / BYTES_TO_GB,
+                espacio_usado_gb: used_space  / BYTES_TO_GB,
+                uso_porcentaje: (used_space / total_space) * 100,
                 removible: disk.is_removable(),
             }
         })

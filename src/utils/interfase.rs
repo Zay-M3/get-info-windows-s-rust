@@ -59,10 +59,10 @@ pub struct DiscoInfo {
     pub punto_montaje: String,
     pub sistema_archivos: String,
     pub tipo: String,
-    pub espacio_total_gb: f64,
-    pub espacio_disponible_gb: f64,
-    pub espacio_usado_gb: f64,
-    pub uso_porcentaje: f64,
+    pub espacio_total_gb: u64,
+    pub espacio_disponible_gb: u64,
+    pub espacio_usado_gb: u64,
+    pub uso_porcentaje: u64,
     pub removible: bool,
 }
 
