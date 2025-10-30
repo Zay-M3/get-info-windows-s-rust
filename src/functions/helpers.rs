@@ -114,9 +114,7 @@ pub fn parse_to_json(report: &SystemReport) -> Result<String, serde_json::Error>
 /// * `report`: The `print_and_send_json` function takes a reference to a `SystemReport` struct as
 /// input. This function first tries to parse the `SystemReport` into a JSON format. If successful, it
 /// prints the JSON data and then proceeds to send the information to a remote server.
-
 pub fn print_and_send_json(report: &SystemReport) {
-
     match parse_to_json(report) {
         Ok(json) => {
             println!("{}", json);
@@ -129,7 +127,11 @@ pub fn print_and_send_json(report: &SystemReport) {
                 winput: request_input_ticket(),
             };
 
-            let rt = tokio::runtime::Runtime::new().unwrap();
+            // Use a new runtime only when needed
+            let rt = tokio::runtime::Builder::new_current_thread()
+                .enable_all()
+                .build()
+                .unwrap();
             match rt.block_on(send_info(&info)) {
                 Ok(status) => println!("Información enviada con estado: {}", status),
                 Err(e) => eprintln!("Error al enviar información: {}", e),
