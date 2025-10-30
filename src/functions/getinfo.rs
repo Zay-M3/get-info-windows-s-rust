@@ -102,7 +102,14 @@ pub fn get_disks_info() -> Vec<DiscoInfo> {
         .map(|(i, disk)| {
             let total_space = disk.total_space();
             let available_space = disk.available_space();
-            let used_space = total_space - available_space;
+            let used_space = total_space.saturating_sub(available_space);
+            
+            // Prevent division by zero for empty/unmounted disks
+            let uso_porcentaje = if total_space > 0 {
+                (used_space * 100) / total_space
+            } else {
+                0
+            };
             
             DiscoInfo {
                 numero: i + 1,
@@ -111,9 +118,9 @@ pub fn get_disks_info() -> Vec<DiscoInfo> {
                 sistema_archivos: format!("{:?}", disk.file_system()),
                 tipo: format!("{:?}", disk.kind()),
                 espacio_total_gb: total_space / BYTES_TO_GB,
-                espacio_disponible_gb: available_space  / BYTES_TO_GB,
-                espacio_usado_gb: used_space  / BYTES_TO_GB,
-                uso_porcentaje: (used_space / total_space) * 100,
+                espacio_disponible_gb: available_space / BYTES_TO_GB,
+                espacio_usado_gb: used_space / BYTES_TO_GB,
+                uso_porcentaje,
                 removible: disk.is_removable(),
             }
         })
@@ -132,17 +139,23 @@ pub fn get_networks_info() -> RedesInfo {
     
     let networks = Networks::new_with_refreshed_list();
     let redes_info: Vec<InterfazRed> = networks.iter()
-        .map(|(interface_name, data)| InterfazRed {
-            nombre: interface_name.to_string(),
-            mac: data.mac_address().to_string(),
-            recibido_mb: data.total_received() as f64 / BYTES_TO_MB,
-            recibido_bytes: data.total_received(),
-            transmitido_mb: data.total_transmitted() as f64 / BYTES_TO_MB,
-            transmitido_bytes: data.total_transmitted(),
-            paquetes_recibidos: data.total_packets_received(),
-            paquetes_transmitidos: data.total_packets_transmitted(),
-            errores_recibidos: data.total_errors_on_received(),
-            errores_transmitidos: data.total_errors_on_transmitted(),
+        .map(|(interface_name, data)| {
+            // Cache method calls to avoid repeated lookups
+            let recibido = data.total_received();
+            let transmitido = data.total_transmitted();
+            
+            InterfazRed {
+                nombre: interface_name.to_string(),
+                mac: data.mac_address().to_string(),
+                recibido_mb: recibido as f64 / BYTES_TO_MB,
+                recibido_bytes: recibido,
+                transmitido_mb: transmitido as f64 / BYTES_TO_MB,
+                transmitido_bytes: transmitido,
+                paquetes_recibidos: data.total_packets_received(),
+                paquetes_transmitidos: data.total_packets_transmitted(),
+                errores_recibidos: data.total_errors_on_received(),
+                errores_transmitidos: data.total_errors_on_transmitted(),
+            }
         })
         .collect();
 
