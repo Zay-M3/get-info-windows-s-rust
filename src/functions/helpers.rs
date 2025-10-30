@@ -16,9 +16,7 @@ pub fn request_input_ticket() -> String {
         .read_line(&mut input)
         .expect("Failed to read line");
 
-    let winput = input.trim().to_string();
-
-    return winput
+    input.trim().to_string()
 }
 
 
@@ -114,7 +112,7 @@ pub fn parse_to_json(report: &SystemReport) -> Result<String, serde_json::Error>
 /// * `report`: The `print_and_send_json` function takes a reference to a `SystemReport` struct as
 /// input. This function first tries to parse the `SystemReport` into a JSON format. If successful, it
 /// prints the JSON data and then proceeds to send the information to a remote server.
-pub fn print_and_send_json(report: &SystemReport) {
+pub async fn print_and_send_json(report: &SystemReport) {
     match parse_to_json(report) {
         Ok(json) => {
             let mut input = String::new();
@@ -146,12 +144,8 @@ pub fn print_and_send_json(report: &SystemReport) {
                 winput: request_input_ticket(),
             };
 
-            // Use a new runtime only when needed
-            let rt = tokio::runtime::Builder::new_current_thread()
-                .enable_all()
-                .build()
-                .unwrap();
-            match rt.block_on(send_info(&info)) {
+            // Use the existing async runtime instead of creating a new one
+            match send_info(&info).await {
                 Ok(status) => println!("Información enviada con estado: {}", status),
                 Err(e) => eprintln!("Error al enviar información: {}", e),
             }

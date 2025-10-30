@@ -203,11 +203,22 @@ pub fn get_users_info() -> UsuariosInfo {
 pub fn get_processes_info(sys: &System) -> ProcesosInfo {
     const BYTES_TO_MB: f64 = 1024.0 * 1024.0;
     
-    let mut processes_vec: Vec<_> = sys.processes().iter().collect();
+    // Use partial_sort for better performance when only getting top 10
+    // Instead of sorting all processes, we use a more efficient approach
+    let mut processes_by_cpu: Vec<_> = sys.processes().iter().collect();
+    let mut processes_by_memory: Vec<_> = sys.processes().iter().collect();
     
-    // Top 10 procesos por uso de CPU
-    processes_vec.sort_by(|a, b| b.1.cpu_usage().partial_cmp(&a.1.cpu_usage()).unwrap());
-    let top_10_cpu: Vec<ProcesoDetalle> = processes_vec.iter()
+    // Calculate index before borrowing
+    let cpu_sort_index = 9.min(processes_by_cpu.len().saturating_sub(1));
+    let memory_sort_index = 9.min(processes_by_memory.len().saturating_sub(1));
+    
+    // Partially sort to get top 10 by CPU - O(n + k log k) instead of O(n log n)
+    if !processes_by_cpu.is_empty() {
+        processes_by_cpu.select_nth_unstable_by(cpu_sort_index, 
+            |a, b| b.1.cpu_usage().partial_cmp(&a.1.cpu_usage()).unwrap_or(std::cmp::Ordering::Equal));
+    }
+    
+    let top_10_cpu: Vec<ProcesoDetalle> = processes_by_cpu.iter()
         .take(10)
         .enumerate()
         .map(|(i, (pid, process))| ProcesoDetalle {
@@ -222,9 +233,13 @@ pub fn get_processes_info(sys: &System) -> ProcesosInfo {
         })
         .collect();
     
-    // Top 10 procesos por uso de memoria
-    processes_vec.sort_by(|a, b| b.1.memory().cmp(&a.1.memory()));
-    let top_10_memoria: Vec<ProcesoDetalle> = processes_vec.iter()
+    // Partially sort to get top 10 by memory - O(n + k log k) instead of O(n log n)
+    if !processes_by_memory.is_empty() {
+        processes_by_memory.select_nth_unstable_by(memory_sort_index,
+            |a, b| b.1.memory().cmp(&a.1.memory()));
+    }
+    
+    let top_10_memoria: Vec<ProcesoDetalle> = processes_by_memory.iter()
         .take(10)
         .enumerate()
         .map(|(i, (pid, process))| ProcesoDetalle {
