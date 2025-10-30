@@ -117,7 +117,26 @@ pub fn parse_to_json(report: &SystemReport) -> Result<String, serde_json::Error>
 pub fn print_and_send_json(report: &SystemReport) {
     match parse_to_json(report) {
         Ok(json) => {
-            println!("{}", json);
+            let mut input = String::new();
+            println!("Press y to print json or any other key to skip...");
+            io::stdin()
+                .read_line(&mut input)
+                .expect("Failed to read line");
+
+            if input.trim().eq_ignore_ascii_case("y") {
+                println!("{}", json);
+            }
+
+            let mut input = String::new();
+
+            println!("Press y to send info to remote server or any other key to skip...");
+            io::stdin()
+                .read_line(&mut input)
+                .expect("Failed to read line");
+
+            if !input.trim().eq_ignore_ascii_case("y") {
+                return;
+            }
 
             // ============= ENVIAR INFO A SERVIDOR REMOTO =============
             let info = Info {

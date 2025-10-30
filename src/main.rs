@@ -1,31 +1,34 @@
 
-mod functions {
-    pub mod helpers;
-    pub mod getinfo;
-}
+use sysinfo::{System};
+mod utils;
+mod api;
+use utils::{SystemReport};
+mod functions;
+use functions::{
+    get_system_os, 
+    get_cpu_info, 
+    get_memory_info, 
+    get_disks_info, 
+    get_networks_info, 
+    get_users_info, 
+    get_processes_info, 
+    check_path_exists, 
+    ask_paths_to_check,
+    print_and_send_json
+};
+mod scanner;
+use scanner::*;
 
-mod utils {
-    pub mod interfase;
-}
 
-mod api {
-    pub mod send_info;
-}
+/// The function `start` gathers system information and paths to check, creates a system report, and
+/// prints/sends it as JSON.
+/// 
+/// Arguments:
+/// 
+/// * `sys`: The `sys` parameter is a mutable reference to a `System` struct or object. It is being
+/// passed to the `start` function to gather various system information and generate a system report.
 
-
-use utils::interfase::*;
-use functions::helpers::*;
-use functions::getinfo::*;
-use sysinfo::System;
-
-/// The function collects system information, checks specified paths, and generates a report in JSON
-/// format.
-
-fn main() {
-    // Create a single System instance and refresh all data once
-    let mut sys = System::new_all();
-    sys.refresh_all();
-    
+fn start( sys: &mut System) {
     let paths_to_check = ask_paths_to_check();
     let reporte = SystemReport {
         sistema_operativo: get_system_os(),
@@ -39,6 +42,19 @@ fn main() {
     };
 
     print_and_send_json(&reporte);
+
+    // Run the async scanner to get all IPs
+    let rt = tokio::runtime::Runtime::new().unwrap();
+    rt.block_on(run_scanner());
+}
+
+fn main() {
+    // Create a single System instance and refresh all data once
+    let mut sys = System::new_all();
+    sys.refresh_all();
+
+    start(&mut sys);
+    println!("Press Enter to exit...");
     
     let mut _dummy = String::new();
     std::io::stdin().read_line(&mut _dummy).unwrap();
