@@ -1,5 +1,5 @@
 use std::io;
-
+use colored::*;
 use crate::utils::interfase::*;
 use crate::api::send_info::*;
 
@@ -115,28 +115,18 @@ pub fn parse_to_json(report: &SystemReport) -> Result<String, serde_json::Error>
 pub async fn print_and_send_json(report: &SystemReport) {
     match parse_to_json(report) {
         Ok(json) => {
-            let mut input = String::new();
-            println!("Presiona y para imprimir el JSON o cualquier otra tecla para omitir...");
-            io::stdin()
-                .read_line(&mut input)
-                .expect("Fallo al leer la línea");
+            println!("{}", json.green());
+        },
+        Err(e) => eprintln!("Error generando JSON: {}", e),
+    }
+}
 
-            if input.trim().eq_ignore_ascii_case("y") {
-                println!("{}", json);
-            }
 
-            let mut input = String::new();
-
-            println!("Presiona y para enviar la información al servidor remoto o cualquier otra tecla para omitir...");
-            io::stdin()
-                .read_line(&mut input)
-                .expect("Fallo al leer la línea");
-
-            if !input.trim().eq_ignore_ascii_case("y") {
-                return;
-            }
-
-            // ============= ENVIAR INFO A SERVIDOR REMOTO =============
+pub async fn send_json_report(report: &SystemReport) {
+    match parse_to_json(report) {
+        Ok(json) => {
+            println!("Enviando el siguiente JSON al servidor remoto:\n{}", json.green());
+            // Aquí puedes agregar la lógica para enviar el JSON al servidor remoto
             let info = Info {
                 id: 1,
                 name: "SistemaReporte".into(),
