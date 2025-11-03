@@ -1,172 +1,213 @@
-# Extractor de Información del Sistema con Rust
+# GetInfo
 
-Este es un ejecutable en Rust que saca toda la información relevante del sistema operativo en formato JSON. Nada de interfaces gráficas ni complicaciones, solo un .exe que corre, escupe el JSON y listo.
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Rust](https://img.shields.io/badge/Rust-1.70%2B-orange.svg)](https://www.rust-lang.org/)
+[![Release](https://img.shields.io/github/v/release/Zay-M3/get-info-windows-s-rust)](https://github.com/Zay-M3/get-info-windows-s-rust/releases)
 
-## Requisitos
+This is a Rust executable that extracts all relevant operating system information in JSON format. No graphical interfaces or complications, just a .exe that runs, spits out the data and you're done.
+
+![Main Menu](imgs/main-menu.png)
+
+## Features
+
+- **System Information Extraction** - Complete OS, CPU, memory, disks, network, users, and processes
+- **Network Scanner** - Scan entire network for open ports
+- **Targeted Port Scanning** - Scan specific IP and port combinations
+- **Beautiful CLI Interface** - Colorful, user-friendly terminal interface
+- **JSON Output** - All data in structured JSON format
+- **Fast & Lightweight** - Runs in 1-2 seconds, uses ~20MB RAM
+
+## Requirements
 
 - Windows 
-- Rust instalado 
+- Rust installed 
 - Visual Studio Build Tools 
 
-## Inicio Rápido
+## Quick Start
 
 ```powershell
-# Compilar
+# Compile
 cargo build --release
 
-# Ejecutar
-.\target\release\test-rust.exe
+# Run
+.\target\release\getinfo_rust.exe
 
-# O si estás en desarrollo
+# Or if you're in development
 cargo run
 ```
 
-## Qué Información Extrae
+## Screenshots
 
-El ejecutable saca todo esto y lo devuelve en JSON:
+### Main Menu
+The application features a colorful, easy-to-navigate menu:
 
-- **Sistema Operativo**: Nombre, versión, kernel, hostname, uptime
-- **CPU**: Todos los núcleos con frecuencia, uso y vendor
-- **Memoria**: RAM total, usada, libre, SWAP (todo en GB y bytes)
-- **Discos**: Todos los discos con espacio, uso, sistema de archivos, tipo
-- **Redes**: Interfaces, MAC, tráfico, paquetes, errores, IP local
-- **Usuarios**: Lista completa con sus grupos
-- **Procesos**: Top 10 por CPU y top 10 por memoria con detalles
-- **Aplicaciones**: Verificación de rutas personalizadas (ej: C:\SiesaFiscal)
+![Main Menu](imgs/main-menu.png)
 
-## Uso Típico
+### System Information
+Get complete system details in JSON format:
 
-### Guardar en archivo
+![System Info](imgs/system-info.png)
+
+### Network Scanner
+Scan your network for open ports:
+
+![Network Scanner](imgs/network-scanner.png)
+
+## What Information It Extracts
+
+The executable gets all this and returns it in JSON:
+
+- **Operating System**: Name, version, kernel, hostname, uptime
+- **CPU**: All cores with frequency, usage, and vendor
+- **Memory**: Total RAM, used, free, SWAP (all in GB and bytes)
+- **Disks**: All disks with space, usage, filesystem, type
+- **Networks**: Interfaces, MAC, traffic, packets, errors, local IP
+- **Users**: Complete list with their groups
+- **Processes**: Top 10 by CPU and top 10 by memory with details
+- **Applications**: Custom path verification (e.g., C:\YourApp)
+
+## Menu Options
+
+1. **Get System Information** - Extracts all system data and displays it as JSON
+2. **Scan Entire Network** - Scans all IPs in your network for open ports (1-10024)
+3. **Scan IP & Port** - Scan a specific IP address and port
+4. **Exit** - Close the application
+
+## Typical Usage
+
+### Interactive Mode
+
+Just run the executable and use the menu:
 
 ```powershell
-.\test-rust.exe > info-sistema.json
+.\getinfo_rust.exe
 ```
 
-### Procesarlo con PowerShell
+### Save to File
 
 ```powershell
-$info = .\test-rust.exe | ConvertFrom-Json
+.\getinfo_rust.exe > system-info.json
+```
+
+### Process with PowerShell
+
+```powershell
+$info = .\getinfo_rust.exe | ConvertFrom-Json
 $info.sistema_operativo.hostname
 $info.cpu.total_cpus
 ```
 
-### Integrarlo con Python
+## Network Scanner Features
 
-```python
-import subprocess
-import json
+### Full Network Scan
+- Automatically detects all IPs in your local network
+- Scans ports 1-10024 on each IP
+- Concurrent scanning with semaphore (50 concurrent tasks)
+- Shows real-time progress
+- Displays only IPs with open ports
 
-result = subprocess.run(['test-rust.exe'], capture_output=True, text=True)
-data = json.loads(result.stdout)
+### Targeted IP/Port Scan
+- Scan specific IP address
+- Check if a specific port is open or closed
+- Format: `192.168.1.1 -p 80`
+- Instant results with color-coded status
 
-print(f"Hostname: {data['sistema_operativo']['hostname']}")
-print(f"RAM usada: {data['memoria']['ram_usada_gb']:.2f} GB")
-```
+![Port Scanner](imgs/port-scanner.png)
 
-### Monitoreo automatizado
+## Compilation
 
-```powershell
-# Ejecutar cada hora y guardar con timestamp
-while ($true) {
-    $fecha = Get-Date -Format "yyyy-MM-dd_HH-mm-ss"
-    .\test-rust.exe > "logs\sistema_$fecha.json"
-    Start-Sleep -Seconds 3600
-}
-```
-
-## Compilación
-
-### Opción 1: Compilar localmente
+### Option 1: Compile Locally
 
 ```powershell
-# Debug (más rápido de compilar)
+# Debug (faster to compile)
 cargo build
 
-# Release (optimizado)
+# Release (optimized)
 cargo build --release
 ```
 
-### Opción 2: Descargar el .exe
+### Option 2: Download the .exe
 
-Si no quieres compilar, descarga el ejecutable desde releases (cuando esté disponible).
+If you don't want to compile, download the executable from [releases](https://github.com/Zay-M3/get-info-windows-s-rust/releases).
 
-## Problemas Comunes
+## Common Issues
 
-### Error de linker (link.exe)
+### Linker Error (link.exe)
 
-Si ves `error: linking with link.exe failed: exit code: 1181`:
+If you see `error: linking with link.exe failed: exit code: 1181`:
 
-1. Instala Visual Studio Build Tools
-2. Marca la opción "C++ build tools" durante la instalación
-3. Reinicia la terminal
+1. Install Visual Studio Build Tools
+2. Check the "C++ build tools" option during installation
+3. Restart the terminal
 
-### El JSON sale cortado en la consola
+### JSON Gets Cut Off in Console
 
-Redirige la salida a un archivo:
+Redirect output to a file:
 
 ```powershell
-.\test-rust.exe > salida.json
+.\test-rust.exe > output.json
 ```
 
-### No detecta algunas interfaces de red
+### Doesn't Detect Some Network Interfaces
 
-Es normal. Solo muestra las interfaces activas que el sistema reporta.
+That's normal. It only shows active interfaces that the system reports.
 
-## Personalización
+## Customization
 
-Para agregar rutas personalizadas a verificar, edita `main.rs`:
+To add custom paths to verify, the application will prompt you interactively, or you can modify the code:
 
 ```rust
 let paths_to_check = vec![
-    "C:\\TuApp",
-    "D:\\OtraCarpeta",
+    "C:\\YourApp",
+    "D:\\AnotherFolder",
 ];
 ```
 
-Luego recompila.
+Then recompile.
 
-## Dependencias
+## Dependencies
 
-El proyecto usa solo:
+The project uses:
 
-- `sysinfo`: Para extraer info del sistema
-- `serde` y `serde_json`: Para serializar a JSON
+- `sysinfo`: For system information extraction
+- `serde` and `serde_json`: For JSON serialization
+- `reqwest`: For HTTP requests
+- `tokio`: For async runtime
+- `colored`: For terminal colors
+- `if-addrs`, `ipnetwork`, `futures`: For network scanning
 
 ## Performance
 
-El ejecutable es ligero:
+The executable is lightweight:
 
-- Tarda ~1-2 segundos en ejecutar
-- Usa ~20MB de RAM mientras corre
-- El JSON resultante pesa ~5-15KB dependiendo de cuántos procesos tengas
+- Takes ~1-2 seconds to run
+- Uses ~20MB of RAM while running
+- Resulting JSON weighs ~5-15KB depending on process count
+- Network scan depends on network size (typically 30-60 seconds for 254 IPs)
 
-## Estructura del Proyecto
+## What This Is For
 
-```
-test-rust/
-├── src/
-│   ├── main.rs              # Lógica principal
-│   └── utils/
-│       └── interfase.rs     # Definiciones de estructuras
-├── Cargo.toml               # Dependencias
-└── target/
-    └── release/
-        └── test-rust.exe    # Ejecutable compilado
-```
+- Server monitoring without installing heavy agents
+- Quick system audits
+- Integration with automation scripts
+- Historical system state logs
+- System change detection
+- Base for custom dashboards
+- Network security auditing
+- Port availability checking
 
-## Para Qué Sirve Esto
+## Contributing
 
-- Monitoreo de servidores sin instalar agentes pesados
-- Auditorías rápidas del sistema
-- Integración con scripts de automatización
-- Logs históricos del estado del servidor
-- Detección de cambios en el sistema
-- Base para dashboards personalizados
+If you find bugs or want to add more information to the JSON, PRs are welcome. I'm not the best Rust programmer in the world, I just wanted it to work and be useful.
 
-## Aportes
+## License
 
-Si encuentras bugs o quieres agregar más información al JSON, los PRs son bienvenidos. No soy el mejor programador de Rust del mundo, solo quería que funcionara y que fuera útil.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Disclaimer
 
-Esto no está pensado para producción crítica ni para reemplazar herramientas enterprise de monitoreo. Es para tener información rápida del sistema sin complicarse.
+This isn't intended for critical production use or to replace enterprise monitoring tools. It's for getting quick system information without complications.
+
+---
+
+Made with ❤️ and Rust by [Zay-M3](https://github.com/Zay-M3)
