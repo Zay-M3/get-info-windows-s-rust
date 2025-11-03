@@ -10,13 +10,23 @@ use crate::api::send_info::*;
 /// 
 /// The function `request_input_ticket()` is returning a `String` value.
 pub fn request_input_ticket() -> String {
-    println!("Requesting input what do you need...");
+    println!("\n{}", "═".repeat(56).bright_cyan());
+    println!("{}", "Enter your mssg information:".bright_white().bold());
+    println!("{}", "═".repeat(56).bright_cyan());
+    print!("{} ", "Input:".bright_green().bold());
+    
     let mut input = String::new();
     io::stdin()
         .read_line(&mut input)
         .expect("Failed to read line");
 
-    input.trim().to_string()
+    let result = input.trim().to_string();
+    
+    if !result.is_empty() {
+        println!("{}", "✓ Ticket information received.".bright_green());
+    }
+    
+    result
 }
 
 
@@ -27,7 +37,16 @@ pub fn request_input_ticket() -> String {
 /// 
 /// A vector of strings containing the paths entered by the user, after splitting and trimming them.
 pub fn ask_paths_to_check() -> Vec<String> {
-    println!("Enter paths to check (separated by commas): ");
+    println!("\n{}", "═".repeat(56).bright_cyan());
+    println!("{}", "           PATH VERIFICATION".bright_white().bold());
+    println!("{}", "═".repeat(56).bright_cyan());
+    
+    println!("\n  {}  {}", "●".bright_blue(), "Enter paths to check (separated by commas)".white());
+    println!("  {}  {}", "●".bright_yellow(), "Example: C:\\Program Files, C:\\Windows, D:\\Data".bright_black());
+    
+    println!("\n{}", "═".repeat(56).bright_cyan());
+    print!("{} ", "Paths:".bright_green().bold());
+    
     let mut input = String::new();
     io::stdin()
         .read_line(&mut input)
@@ -37,9 +56,16 @@ pub fn ask_paths_to_check() -> Vec<String> {
         .trim()
         .split(',')
         .map(|s| s.trim().to_string())
+        .filter(|s| !s.is_empty()) // Filter out empty strings
         .collect();
 
-    paths
+    if paths.is_empty() {
+        println!("{}", "\n⚠ No paths provided. Using default path...".bright_yellow());
+        vec!["C:\\".to_string()]
+    } else {
+        println!("{} {} {}", "\n✓".bright_green().bold(), paths.len(), "path(s) will be checked.".bright_green());
+        paths
+    }
 }
 
 /// The function `check_path_exists` takes a vector of file paths, checks if each path exists, counts
@@ -120,13 +146,24 @@ pub async fn print_and_send_json(report: &SystemReport) {
         Err(e) => eprintln!("Error generando JSON: {}", e),
     }
 }
-
+/// The function `send_json_report` sends a system report in JSON format to a remote server
+/// asynchronously.
+/// 
+/// Arguments:
+/// 
+/// * `report`: The function `send_json_report` takes a reference to a `SystemReport` struct as a
+/// parameter named `report`. This struct likely contains information about the system that needs to be
+/// converted to JSON format and sent to a remote server. The function first converts the `SystemReport`
+/// to JSON, then
 
 pub async fn send_json_report(report: &SystemReport) {
     match parse_to_json(report) {
         Ok(json) => {
-            println!("Enviando el siguiente JSON al servidor remoto:\n{}", json.green());
-            // Aquí puedes agregar la lógica para enviar el JSON al servidor remoto
+            println!("\n{}", "═".repeat(56).bright_cyan());
+            println!("{}", "Sending JSON to remote server...".bright_yellow().bold());
+            println!("{}", "═".repeat(56).bright_cyan());
+            println!("\n{}", json.green());
+            
             let info = Info {
                 id: 1,
                 name: "SistemaReporte".into(),
@@ -136,10 +173,10 @@ pub async fn send_json_report(report: &SystemReport) {
 
             // Use the existing async runtime instead of creating a new one
             match send_info(&info).await {
-                Ok(status) => println!("Información enviada con estado: {}", status),
-                Err(e) => eprintln!("Error al enviar información: {}", e),
+                Ok(status) => println!("{} Information sent with status: {}", "✓".bright_green().bold(), status.to_string().bright_white()),
+                Err(e) => eprintln!("{} Error sending information: {}", "✗".bright_red().bold(), e),
             }
         },
-        Err(e) => eprintln!("Error generando JSON: {}", e),
+        Err(e) => eprintln!("{} Error generating JSON: {}", "✗".bright_red().bold(), e),
     }
 }
