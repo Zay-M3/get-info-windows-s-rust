@@ -6,7 +6,7 @@
 
 This is a Rust executable that extracts all relevant operating system information in JSON format. No graphical interfaces or complications, just a .exe that runs, spits out the data and you're done.
 
-![Main Menu](imgs/main-menu.png)
+![Main Menu](imgs/get_info_rust.png)
 
 ## Features
 
@@ -41,17 +41,12 @@ cargo run
 ### Main Menu
 The application features a colorful, easy-to-navigate menu:
 
-![Main Menu](imgs/main-menu.png)
-
-### System Information
-Get complete system details in JSON format:
-
-![System Info](imgs/system-info.png)
+![Main Menu](imgs/get_info_rust.png)
 
 ### Network Scanner
 Scan your network for open ports:
 
-![Network Scanner](imgs/network-scanner.png)
+![Network Scanner](imgs/get_info_scanner.png)
 
 ## What Information It Extracts
 
