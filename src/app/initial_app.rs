@@ -44,6 +44,11 @@ pub async fn get_info_system_json(sys: &mut System) -> SystemReport {
 /// the network, changing endpoint settings
 
 pub async fn start_menu_app(sys: &mut System) {
+
+    if !control::SHOULD_COLORIZE.should_colorize() {
+        colored::control::set_override(false);
+    }
+
     loop {
         // Clear screen (optional)
         print!("\x1B[2J\x1B[1;1H"); // ANSI escape code to clear screen
@@ -109,6 +114,8 @@ pub async fn start_menu_app(sys: &mut System) {
             "6" => {
                 println!("{}", "\n\n✓ Exiting program...".bright_red().bold());
                 println!("{}", "Goodbye!\n".bright_green());
+                //add un time of 5 seconds before exit
+                tokio::time::sleep(tokio::time::Duration::from_secs(2)).await;
                 exit(0);
                 
             },

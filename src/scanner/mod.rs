@@ -4,6 +4,8 @@ use tokio::sync::Semaphore;
 use tokio::time::{timeout, Duration};
 use futures::future::join_all;
 use std::sync::Arc;
+use std::io;
+use colored::*;
 
 const PER_HOST_CONCURRENCY: usize = 20;
 const BATCH_SIZE: usize = 1024;
@@ -73,8 +75,12 @@ pub async fn scan_all_ports_optimized(ip: &str, ports: &[u16]) -> Vec<u16> {
                 
                 match timeout(Duration::from_millis(TIMEOUT_MS), connect).await {
                     Ok(Ok(_)) => { 
-                        println!("  ✓ Puerto abierto: {}", port);
+                        println!("  ✓ Puerto abierto: {}", port.to_string().bright_green());
                         Some(port)
+                    },
+                    Ok(Err(e)) if e.kind() == io::ErrorKind::PermissionDenied => {
+                        eprintln!("⚠ Permission denied for port {}", port.to_string().bright_yellow());
+                        None
                     },
                     _ => None,
                 }

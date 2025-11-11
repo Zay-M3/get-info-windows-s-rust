@@ -74,7 +74,8 @@ pub async fn send_info(info: &Info) -> Result<reqwest::StatusCode, Box<dyn std::
         .body(body)
         .send()
         .await?
-        .error_for_status()?; 
+        .error_for_status()?;  
 
     Ok(resp.status())
+
 }
