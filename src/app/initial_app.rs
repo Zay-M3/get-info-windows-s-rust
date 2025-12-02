@@ -69,7 +69,7 @@ pub async fn start_menu_app(sys: &mut System) {
         let info = r#"
 ╔════════════════════════════════════════════════════════╗
 ║  GitHub: https://github.com/Zay-M3                     ║
-║  Project: get-info-windows-s-rust                      ║
+║  Project: GetInfo                                      ║
 ╚════════════════════════════════════════════════════════╝"#;
         
         println!("{}", info.bright_yellow());
@@ -84,7 +84,8 @@ pub async fn start_menu_app(sys: &mut System) {
         println!("  {}  {}", "3.".bright_blue().bold(), "Scan entire network".white());
         println!("  {}  {}", "4.".bright_blue().bold(), "Scan network - IP and Port".white());
         println!("  {}  {}", "5.".bright_blue().bold(), "Change endpoint global".white());
-        println!("  {}  {}", "6.".bright_red().bold(), "Exit".white());
+        println!("  {}  {}", "6.".bright_blue().bold(), "Another option".white());
+        println!("  {}  {}", "0.".bright_red().bold(), "Exit".white());
 
         print!("\n{} ", "Select an option:".bright_white().bold());
         println!("\n{}", "═".repeat(56).bright_cyan());
@@ -111,7 +112,7 @@ pub async fn start_menu_app(sys: &mut System) {
             "5" => {
                 change_endpoint_command().await;
             },
-            "6" => {
+            "0" => {
                 println!("{}", "\n\n✓ Exiting program...".bright_red().bold());
                 println!("{}", "Goodbye!\n".bright_green());
                 //add un time of 5 seconds before exit
