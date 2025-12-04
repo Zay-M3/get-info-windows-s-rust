@@ -76,7 +76,7 @@ unsafe fn query_device_property(handle: HANDLE) -> windows::core::Result<()> {
     let bus_type_nvme = STORAGE_BUS_TYPE(17);
     let bus_type_sata = STORAGE_BUS_TYPE(11);
     let bus_type_usb = STORAGE_BUS_TYPE(7);
-    let bus_type_scsi = STORAGE_BUS_TYPE(2);
+    let bus_type_scsi = STORAGE_BUS_TYPE(1);
     
     match descriptor.BusType {
         t if t == bus_type_nvme => println!("{}", "NVMe".bright_green()),

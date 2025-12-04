@@ -128,11 +128,11 @@ pub async fn change_endpoint_command() {
 }
 
 
-/// The function `check_disk_health_command` checks the disk/SSD health status
-pub async fn check_ssh_dist_command() {
+/// Checks the disk/SSD health status using Windows IOCTL storage queries.
+pub async fn check_disk_health_command() {
     use crate::functions::print_results_of_check_disk_health;
 
-    println!("{}", "\n\n    ► Check SSH Distribution Health".bright_green().bold());
+    println!("{}", "\n\n    ► Check Disk Health (Beta)".bright_green().bold());
     println!("\n{}", "═".repeat(56).bright_cyan());
     
     match print_results_of_check_disk_health() {

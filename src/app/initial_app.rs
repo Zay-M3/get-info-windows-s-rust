@@ -113,7 +113,7 @@ pub async fn start_menu_app(sys: &mut System) {
                 change_endpoint_command().await;
             },
             "6" => {
-                check_ssh_dist_command().await;
+                check_disk_health_command().await;
             },
             "0" => {
                 println!("{}", "\n\n✓ Exiting program...".bright_red().bold());
