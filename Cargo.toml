@@ -13,3 +13,11 @@ if-addrs = "0.6"
 ipnetwork = "0.19"
 futures = "0.3"
 colored = "3.0.0"
+windows = { version = "0.58", features = [
+    "Win32_Foundation",
+    "Win32_Storage_FileSystem",
+    "Win32_System_Ioctl",
+    "Win32_Security",
+    "Win32_System_IO",
+    
+] }

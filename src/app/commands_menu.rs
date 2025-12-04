@@ -126,3 +126,34 @@ pub async fn change_endpoint_command() {
     let mut _dummy = String::new();
     std::io::stdin().read_line(&mut _dummy).unwrap();
 }
+
+
+/// Checks the disk/SSD health status using Windows IOCTL storage queries.
+pub async fn check_disk_health_command() {
+    use crate::functions::print_results_of_check_disk_health;
+
+    println!("{}", "\n\n    ► Check Disk Health (Beta)".bright_green().bold());
+    println!("\n{}", "═".repeat(56).bright_cyan());
+    
+    match print_results_of_check_disk_health() {
+        Ok(_) => println!("{}", "\n✓ Health check completed successfully".bright_green()),
+        Err(e) => {
+            eprintln!("{}", "\n✗ Error checking disk health:".bright_red().bold());
+            eprintln!("{}", format!("  {}", e).bright_red());
+            
+            // Check if it's an access denied error
+            if format!("{:?}", e).contains("0x80070001") || format!("{:?}", e).contains("0x80070005") {
+                eprintln!("\n{}", "⚠ ADMINISTRATOR PRIVILEGES REQUIRED".bright_yellow().bold());
+                eprintln!("{}", "  This feature requires accessing physical drives.".bright_yellow());
+                eprintln!("{}", "  Please run this program as Administrator:".bright_yellow());
+            }
+        }
+    }
+    
+    // Wait for user to press Enter
+    print!("{} ", "\nPress Enter to continue...".bright_yellow().bold());
+    println!("\n{}", "═".repeat(56).bright_cyan());
+
+    let mut _dummy = String::new();
+    std::io::stdin().read_line(&mut _dummy).unwrap();
+}
