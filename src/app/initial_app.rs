@@ -84,7 +84,7 @@ pub async fn start_menu_app(sys: &mut System) {
         println!("  {}  {}", "3.".bright_blue().bold(), "Scan entire network".white());
         println!("  {}  {}", "4.".bright_blue().bold(), "Scan network - IP and Port".white());
         println!("  {}  {}", "5.".bright_blue().bold(), "Change endpoint global".white());
-        println!("  {}  {}", "6.".bright_blue().bold(), "Check SSH dist".white());
+        println!("  {}  {}", "6.".bright_blue().bold(), "Check Disk Health (Beta)".white());
         println!("  {}  {}", "0.".bright_red().bold(), "Exit".white());
 
         print!("\n{} ", "Select an option:".bright_white().bold());

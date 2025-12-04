@@ -128,18 +128,17 @@ pub async fn change_endpoint_command() {
 }
 
 
-/// The function `check_ssh_dist_command` in Rust checks the SSH distribution health and searhding corrupted files
-
+/// The function `check_disk_health_command` checks the disk/SSD health status
 pub async fn check_ssh_dist_command() {
-    use crate::functions::print_results_of_check_ssh_distribution;
+    use crate::functions::print_results_of_check_disk_health;
 
     println!("{}", "\n\n    ► Check SSH Distribution Health".bright_green().bold());
     println!("\n{}", "═".repeat(56).bright_cyan());
     
-    match print_results_of_check_ssh_distribution() {
+    match print_results_of_check_disk_health() {
         Ok(_) => println!("{}", "\n✓ Health check completed successfully".bright_green()),
         Err(e) => {
-            eprintln!("{}", "\n✗ Error checking SSH distribution health:".bright_red().bold());
+            eprintln!("{}", "\n✗ Error checking disk health:".bright_red().bold());
             eprintln!("{}", format!("  {}", e).bright_red());
             
             // Check if it's an access denied error

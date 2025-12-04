@@ -11,11 +11,11 @@ use windows::{
 use colored::*;
 use std::mem;
 
-//This function prints the results of checking the SSD distribution on a Windows system using IOCTL to retrieve storage properties.
-//this is sent to commands_menu.rs
-pub fn print_results_of_check_ssh_distribution() -> windows::core::Result<()>  {
+// This function prints the results of checking the disk/SSD health on a Windows system using IOCTL to retrieve storage properties.
+// This is called from commands_menu.rs
+pub fn print_results_of_check_disk_health() -> windows::core::Result<()>  {
     unsafe {
-        println!("{}", "Starting SSH Distribution Health Check...".bright_green().bold());
+        println!("{}", "Starting Disk Health Check...".bright_green().bold());
         // Path to the physical drive
         let handle =  
                 CreateFileW(
@@ -28,11 +28,6 @@ pub fn print_results_of_check_ssh_distribution() -> windows::core::Result<()>  {
                 None,
             )?
         ;
-
-        if handle.is_invalid() {
-            println!("{}", "Failed to open drive handle".bright_red());
-            return Ok(());
-        }
 
         println!("{}", "\n=== Storage Device Information ===\n".bright_cyan().bold());
 
@@ -136,11 +131,20 @@ unsafe fn query_adapter_property(handle: HANDLE) -> windows::core::Result<()> {
     println!("  Max Transfer Length: {} bytes", descriptor.MaximumTransferLength);
     println!("  Max Physical Pages: {}", descriptor.MaximumPhysicalPages);
     println!("  Alignment Mask: 0x{:X}", descriptor.AlignmentMask);
-    println!("  PCI Bus/Device/Function: {}/{}/{}", 
-        descriptor.BusMinorVersion,
+    println!("  Adapter Version: {}.{}", 
         descriptor.BusMajorVersion,
-        descriptor.Version
+        descriptor.BusMinorVersion
     );
+    println!("  Command Queueing: {}", descriptor.CommandQueueing.as_bool());
+    println!("  Accelerated Transfer: {}", descriptor.AcceleratedTransfer.as_bool());
+    println!("  Adapter Scan Down: {}", descriptor.AdapterScansDown.as_bool());
+    println!("  Bus Type: {:?}", descriptor.BusType);
+    println!("  Srb Type: {:?}", descriptor.SrbType);
+    println!("  Address type: {:?}", descriptor.AddressType);
+
+    println!("  Size of Descriptor: {} bytes", descriptor.Size);
+    println!("  Version: {}", descriptor.Version);
+
     println!();
     Ok(())
 }
@@ -164,6 +168,8 @@ unsafe fn query_device_id_property(handle: HANDLE) -> windows::core::Result<()> 
     if descriptor.NumberOfIdentifiers > 0 {
         println!("  {} Device identifiers available", descriptor.NumberOfIdentifiers);
     }
+
+    
     
     println!();
     Ok(())
